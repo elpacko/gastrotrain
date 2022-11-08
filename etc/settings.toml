@@ -1,0 +1,3 @@
+[default]
+CAPTURAS_ROOT = "/mnt/e/Gastroclub/"
+DATASOURCE = "/mnt/e/Gastroclub/estudios.csv"
