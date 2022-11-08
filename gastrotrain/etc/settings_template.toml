@@ -1,0 +1,3 @@
+[default]
+CAPTURAS_ROOT = "/images"
+DATASOURCE = "datasource.csv"

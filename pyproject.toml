@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "gastrotrain"
+version = "0.1.0"
+description = ""
+authors = ["Francisco Rivera <elpacko@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+toml = "^0.10.2"
+matplotlib = "^3.6.2"
+keras = "^2.10.0"
+tensorflow = "^2.10.0"
+pandas = "^1.5.1"
+progressbar = "^2.5"
+isort = "^5.10.1"
+black = "^22.10.0"
+nltk = "^3.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
