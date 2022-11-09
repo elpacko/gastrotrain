@@ -3,9 +3,11 @@ from csv import reader
 
 import pandas as pd
 import progressbar
+
 from settings import get_settings
 
 app_settings = get_settings()
+
 
 def __init__():
     pass
@@ -14,7 +16,6 @@ def __init__():
 def get_df():
     df = pd.read_csv(app_settings["default"]["DATASOURCE"])
     return df
-
 
 
 def get_file_exists():

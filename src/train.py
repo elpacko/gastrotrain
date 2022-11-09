@@ -1,14 +1,13 @@
-import tensorflow as tf
-from tensorflow import keras
-import matplotlib.pyplot as plt
 import os
 import time
+
+import matplotlib.pyplot as plt
 import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+
+from categorias import get_categorias
 from medios import get_df
-from nltk.tokenize import word_tokenize
 
 df = get_df()
-
-def tokenize(descripcion):
-    return word_tokenize(descripcion)
-
+categorias = get_categorias(df)
