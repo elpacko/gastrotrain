@@ -1,3 +1,4 @@
 [default]
-CAPTURAS_ROOT = "/images"
-DATASOURCE = "datasource.csv"
+CAPTURAS_ROOT = "/mnt/e/Gastroclub/"
+DATASOURCE = "estudios.csv"
+LOCALIZACIONES = "localizaciones.csv"
