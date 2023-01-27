@@ -9,22 +9,24 @@ from nltk import edit_distance
 
 app_settings = get_settings()
 capturas_root = app_settings["default"]["CAPTURAS_ROOT"]
-capturas_datasource = os.path.join(app_settings["default"]["CAPTURAS_ROOT"], app_settings["default"]["DATASOURCE"])
-capturas_localizaciones = os.path.join(app_settings["default"]["CAPTURAS_ROOT"], app_settings["default"]["LOCALIZACIONES"])
+capturas_datasource = os.path.join(capturas_root, app_settings["default"]["DATASOURCE"])
+capturas_localizaciones = os.path.join(capturas_root, app_settings["default"]["LOCALIZACIONES"])
 progressbar_settings = [progressbar.Bar("=", "[", "]"), " ", progressbar.Percentage()]
-
+file_exists_path =os.path.join(capturas_root,"file_exists_status.csv")
 
 def __init__():
     pass
 
 
 def get_capturas_df():
-    df = pd.read_csv(capturas_datasource)
-    return df
+    return pd.read_csv(capturas_datasource)
 
 def get_capturas_localizaciones_df():
-    df = pd.read_csv(capturas_localizaciones)
-    return df
+    return pd.read_csv(capturas_localizaciones)
+
+def get_medios_path():
+    return os.path.join(capturas_root, "EstudiosSeparados/")
+
 
 def init_categorias_folders():
     print("Creando folders de categorias")
@@ -51,6 +53,8 @@ def crear_directorio(path):
     
 def get_file_exists():
     print("Identificando imagenes existentes")
+    if os.path.isfile(file_exists_path):
+        return pd.read_csv(file_exists_path)
     capturas_df = get_capturas_df()
     file_exists_status = []
     bar = progressbar.ProgressBar(
@@ -66,7 +70,7 @@ def get_file_exists():
     capturas_df["file_exists_status"] = file_exists_status
     bar.finish()
     capturas_df.to_csv(
-        "file_exists_status.csv", index=False, encoding="utf-8"
+        file_exists_path, index=False, encoding="utf-8"
     )  # False: not include index
     capturas_df["file_exists_status"].value_counts().plot.bar()
     return capturas_df

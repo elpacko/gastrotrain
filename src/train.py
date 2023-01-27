@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 from categorias import get_categorias
-from medios import get_df
+from medios import get_capturas_df
 
-df = get_df()
+df = get_capturas_df()
 categorias = get_categorias(df)
