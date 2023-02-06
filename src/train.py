@@ -26,7 +26,7 @@ batch_size = 4
 img_height = 450
 img_width = 450
 
-#TODO: pre-proceso de distintos tamanios
+#TODO: pre-proceso de distintos tamaños
 
 
 medios_path = get_medios_path()
