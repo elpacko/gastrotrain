@@ -21,10 +21,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
-
-batch_size = 4
-img_height = 450
-img_width = 450
+from medios import get_medios_path
+batch_size = 32
+img_height = 200 # 450
+img_width = 200
 
 #TODO: pre-proceso de distintos tamaños
 
@@ -54,6 +54,8 @@ imagen_int = random.randint(0, len(imagen))
 
 print (imagen[imagen_int])
 PIL.Image.open(str(imagen[imagen_int]))
+print("------------------------------------------------------")
+print(f"loading datasests from {data_dir=}")
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
   data_dir,
@@ -70,8 +72,9 @@ subset="validation",
 seed=123,
 image_size=(img_height, img_width),
 batch_size=batch_size)
+
 class_names = train_ds.class_names
-print(class_names[:10])
+print(f"----------->{class_names=}")
 
 import matplotlib.pyplot as plt
 
@@ -89,7 +92,7 @@ for image_batch, labels_batch in train_ds:
   break
 AUTOTUNE = tf.data.AUTOTUNE
 
-train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
+train_ds = train_ds.shuffle(1000).cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
 normalization_layer = layers.Rescaling(1./255)
@@ -120,8 +123,9 @@ model.compile(optimizer='adam',
 
 model.summary()
 
-
 epochs=10
+print(f"running for {epochs=}")
+
 history = model.fit(
   train_ds,
   validation_data=val_ds,
