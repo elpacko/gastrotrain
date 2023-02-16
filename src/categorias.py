@@ -4,7 +4,7 @@ import re
 import nltk
 import pandas as pd
 import unidecode
-from gensim.parsing.preprocessing import remove_stopwords
+# from gensim.parsing.preprocessing import remove_stopwords
 from nltk.stem import SnowballStemmer
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
