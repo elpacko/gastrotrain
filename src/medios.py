@@ -28,11 +28,17 @@ def get_medios_path():
     return os.path.join(capturas_root, "EstudiosSeparados/")
 
 
-def init_categorias_folders():
+def init_categorias_folders(target_folder):
     print("Creando folders de categorias")
     localizaciones_df = get_capturas_localizaciones_df()
     for _, localizacion_categoria in localizaciones_df.iterrows():
-        categoria_path = os.path.join(capturas_root,"EstudiosSeparados",str(localizacion_categoria["Categoria"]))
+        categoria_path = os.path.join(capturas_root,target_folder,str(localizacion_categoria["Categoria"]))
+        crear_directorio(categoria_path)
+
+def init_categorias_polipos_folders(target_folder):
+    print("Creando folders de categorias")
+    for categoria in ["POLIPO","NOPOLIPO"]:
+        categoria_path = os.path.join(capturas_root,target_folder, categoria)
         crear_directorio(categoria_path)
 
 def get_categoria(localizaciones_df, localizacion):
@@ -46,6 +52,9 @@ def get_categoria(localizaciones_df, localizacion):
     min_key = min(match_dict, key=match_dict.get)
     return min_key
 
+def get_tiene_polipo(localizacion):
+    found_polipo = "NO" if not re.search("(?i)p.?lipo.*", localizacion) else ""
+    return f"{found_polipo}POLIPO"
 
 def crear_directorio(path):
     if (not os.path.exists(path)):
@@ -77,11 +86,12 @@ def get_file_exists():
 
 
 
-def separar_imagenes():
+def separar_imagenes_localizaciones():
     from shutil import copyfile
+    target_folder = "EstudiosSeparados"
     capturas_df = get_file_exists()
     capturas_df = capturas_df.loc[capturas_df["file_exists_status"]  == True]
-    init_categorias_folders()
+    init_categorias_folders(target_folder)
     bar = progressbar.ProgressBar(
         maxval=capturas_df.shape[0],
         widgets=progressbar_settings,
@@ -90,7 +100,7 @@ def separar_imagenes():
     for index, row in capturas_df.iterrows():
         localizaciones_df = get_capturas_localizaciones_df()
         categoria = get_categoria(localizaciones_df, row["DescripcionEnEstudio"])
-        categoria_path = os.path.join(capturas_root,"EstudiosSeparados",str(categoria))
+        categoria_path = os.path.join(capturas_root,target_folder,str(categoria))
         target_path = os.path.join(categoria_path,os.path.basename(row["url"]))
         source_path = os.path.join(capturas_root, row["url"])
         if index % 10 == 0:
@@ -103,4 +113,28 @@ def separar_imagenes():
     # capturas_df["file_exists_status"].value_counts().plot.bar()
     return capturas_df
 
+def separar_imagenes_polipo_binario():
+    from shutil import copyfile
+    capturas_df = get_file_exists()
+    capturas_df = capturas_df.loc[capturas_df["file_exists_status"]  == True]
+    targetfolder = "EstudiosPolipos"
+    init_categorias_polipos_folders(targetfolder)
+    bar = progressbar.ProgressBar(
+        maxval=capturas_df.shape[0]+1,
+        widgets=progressbar_settings,
+    )
+    bar.start()
+    for index, row in capturas_df.iterrows():
+        categoria = get_tiene_polipo(row["DescripcionEnEstudio"])
+        categoria_path = os.path.join(capturas_root, targetfolder, str(categoria))
+        target_path = os.path.join(categoria_path,os.path.basename(row["url"]))
+        source_path = os.path.join(capturas_root, row["url"])
+        if index % 10 == 0:
+            print (f"{source_path} to {target_path}")
+        if os.path.isfile(source_path):
+            copyfile(source_path, target_path)
+        bar.update(index)
 
+    bar.finish()
+    # capturas_df["file_exists_status"].value_counts().plot.bar()
+    return capturas_df
