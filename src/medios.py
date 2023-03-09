@@ -1,7 +1,8 @@
 import os
+import random
 import re
 from csv import reader
-
+from shutil import copyfile
 import pandas as pd
 import progressbar
 from nltk import edit_distance
@@ -130,8 +131,6 @@ def separar_imagenes_localizaciones():
 
 
 def separar_imagenes_polipo_binario():
-    from shutil import copyfile
-
     capturas_df = get_file_exists()
     capturas_df = capturas_df.loc[capturas_df["file_exists_status"] == True]
     targetfolder = "EstudiosPolipos"
@@ -155,3 +154,14 @@ def separar_imagenes_polipo_binario():
     bar.finish()
     # capturas_df["file_exists_status"].value_counts().plot.bar()
     return capturas_df
+
+def select_sample_images():
+    targetfolder = "EstudiosPolipos"
+    target_path = os.path.join(capturas_root, targetfolder, "NOPOLIPO")
+    source_path = os.path.join(capturas_root, targetfolder, "NOPOLIPO_FULL")
+    sample_path = os.path.join(capturas_root, targetfolder, "POLIPO")
+    files = os.listdir(source_path) # get all files in the folder
+    sample_size = len(os.listdir(sample_path))
+    sample = random.sample(files, sample_size) # select 3 files randomly
+    for file in sample:
+        copyfile(os.path.join(source_path, file), os.path.join(target_path, file))
