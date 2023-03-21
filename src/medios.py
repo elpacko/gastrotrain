@@ -2,11 +2,11 @@ import os
 import random
 import re
 from csv import reader
-from shutil import copyfile
+from shutil import copyfile, move
 import pandas as pd
 import progressbar
 from nltk import edit_distance
-
+from math import floor
 from settings import get_settings
 
 app_settings = get_settings()
@@ -78,6 +78,11 @@ def crear_directorio(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
+def progressbar_common(size):
+    return  progressbar.ProgressBar(
+        maxval=size,
+        widgets=progressbar_settings,
+    )
 
 def get_file_exists():
     print("Identificando imagenes existentes")
@@ -85,10 +90,7 @@ def get_file_exists():
         return pd.read_csv(file_exists_path)
     capturas_df = get_capturas_df()
     file_exists_status = []
-    bar = progressbar.ProgressBar(
-        maxval=capturas_df.shape[0],
-        widgets=progressbar_settings,
-    )
+    bar = progressbar_common(capturas_df.shape[0])
     bar.start()
     for index, row in capturas_df.iterrows():
         file_name = capturas_root + row["url"]
@@ -110,10 +112,7 @@ def separar_imagenes_localizaciones():
     capturas_df = get_file_exists()
     capturas_df = capturas_df.loc[capturas_df["file_exists_status"] == True]
     init_categorias_folders(full_categorias_subfolder)
-    bar = progressbar.ProgressBar(
-        maxval=capturas_df.shape[0],
-        widgets=progressbar_settings,
-    )
+    bar = progressbar_common(capturas_df.shape[0])
     bar.start()
     for index, row in capturas_df.iterrows():
         localizaciones_df = get_capturas_localizaciones_df()
@@ -136,10 +135,7 @@ def separar_imagenes_polipo_binario():
     capturas_df = get_file_exists()
     capturas_df = capturas_df.loc[capturas_df["file_exists_status"] == True]
     init_categorias_polipos_folders(polipos_categorias_subfolder)
-    bar = progressbar.ProgressBar(
-        maxval=capturas_df.shape[0] + 1,
-        widgets=progressbar_settings,
-    )
+    bar = progressbar_common(capturas_df.shape[0])
     bar.start()
     for index, row in capturas_df.iterrows():
         categoria = get_tiene_polipo(row["DescripcionEnEstudio"])
@@ -160,8 +156,22 @@ def select_sample_images():
     target_path = os.path.join(capturas_root, polipos_categorias_subfolder, "NOPOLIPO")
     source_path = os.path.join(capturas_root, polipos_categorias_subfolder, "NOPOLIPO_FULL")
     sample_path = os.path.join(capturas_root, polipos_categorias_subfolder, "POLIPO")
-    files = os.listdir(source_path) # get all files in the folder
+    files = os.listdir(source_path)
     sample_size = len(os.listdir(sample_path))
-    sample = random.sample(files, sample_size) # select 3 files randomly
+    sample = random.sample(files, sample_size) 
     for file in sample:
         copyfile(os.path.join(source_path, file), os.path.join(target_path, file))
+
+def separar_train_test():
+    categorias = ["POLIPO", "NOPOLIPO"]
+    for categoria in categorias:
+        
+        source_path = os.path.join(capturas_root, polipos_categorias_subfolder,"train", categoria)
+        sample_size = floor(len(os.listdir(source_path)) * .2)
+        target_path = os.path.join(capturas_root, polipos_categorias_subfolder,"test", categoria)
+        
+        files = os.listdir(source_path)
+        
+        sample = random.sample(files, sample_size)
+        for file in sample:
+            move(os.path.join(source_path, file), os.path.join(target_path, file))
