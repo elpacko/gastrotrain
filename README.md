@@ -1,0 +1,1 @@
+Proyecto para entrenar una red neuronal
